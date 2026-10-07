@@ -90,3 +90,23 @@ test('GPT-6.1 Sol 仅允许无工具的 Chat Completions 请求', () => {
 		tools: [{ type: 'function', function: { name: 'read_file' } }],
 	}, context), /Responses API/);
 });
+
+test('OpenAI 新推理模型移除不兼容的采样参数', () => {
+	const { OpenAIReasoningAdapter } = load({ adapter: './src/adapter/openai/openaiReasoningAdapter' }).modules.adapter;
+	const adapter = new OpenAIReasoningAdapter();
+	const context = { model: { id: 'gpt-5.4' }, logger: createLogger() };
+	assert.equal(adapter.supports({ id: 'gpt-5.4' }), true);
+	assert.equal(adapter.supports({ id: 'gpt-5-code' }), true);
+	assert.equal(adapter.supports({ id: 'gpt-6-astra' }), true);
+	assert.equal(adapter.supports({ id: 'gpt-4.1' }), false);
+	const request = adapter.transformRequest({
+		model: 'gpt-5.4', messages: [{ role: 'user', content: 'hello' }],
+		temperature: 0.2, top_p: 0.8, logprobs: true, top_logprobs: 2,
+		reasoning_effort: 'high', tools: [{ type: 'function', function: { name: 'lookup' } }],
+	}, context);
+	assert.equal(request.reasoning_effort, 'high');
+	assert.equal(request.tools.length, 1);
+	for (const key of ['temperature', 'top_p', 'logprobs', 'top_logprobs']) {
+		assert.equal(key in request, false);
+	}
+});

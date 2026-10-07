@@ -61,6 +61,9 @@
 
 GPT-6.1 Sol 可用于文字和图片对话。它的函数调用要求 Responses API，而本扩展目前使用 Chat Completions，因此模型选择器不为它启用工具调用。带工具的 Agent 模式需要接入 Responses API。
 
+
+Newer OpenAI reasoning models (GPT-5.4+, GPT-5.6, GPT-6 Astra and Codex variants) are adapted automatically: unsupported sampling fields are removed before Chat Completions requests. Image-generation model IDs are exposed without tool calling.
+
 ## 设置项
 
 本扩展的设置位于 `newapi-copilot-chat.*` 之下，可在设置界面搜索 `New API` 找到

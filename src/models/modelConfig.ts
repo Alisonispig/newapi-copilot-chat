@@ -199,6 +199,15 @@ export function resolveModelConfig(model: NewApiModel, options: BuildModelConfig
 		provenance.toolCalling = 'default';
 		adjustments.push('GPT-6.1 Sol 的工具调用需要 Responses API，当前 Chat Completions 客户端已禁用该能力。');
 	}
+	// 图像生成模型不接受 Chat Completions 的 tools；部分网关会把它们
+	// 错误地标成通用 GPT 模型，按模型名纠正能力，避免 VS Code 下发工具。
+	if (/(?:^|\/)(?:gpt-image|gpt-5(?:\.[0-9]+)?-image|gemini-[^/]*image|grok-[^/]*image)(?:$|[@:.-])/i.test(model.id)) {
+		if (toolCalling) {
+			toolCalling = false;
+			provenance.toolCalling = 'default';
+			adjustments.push('图像模型不支持 Chat Completions 工具调用，已禁用工具能力。');
+		}
+	}
 
 	// ---- 思考能力 --------------------------------------------------------
 	// 网关只能给出「肯定」（见 `RemoteModelHints.reasoning`），因此数据表先落地、

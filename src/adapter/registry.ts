@@ -10,6 +10,7 @@ import { DefaultModelAdapter } from './defaultAdapter';
 import { DeepSeekAdapter } from './deepseek/deepseekAdapter';
 import { Gpt6ChatAdapter } from './openai/gpt6ChatAdapter';
 import { Gpt61ChatAdapter } from './openai/gpt61ChatAdapter';
+import { OpenAIReasoningAdapter } from './openai/openaiReasoningAdapter';
 
 /** 适配器注册表。 */
 export class AdapterRegistry {
@@ -63,6 +64,7 @@ export function createDefaultAdapterRegistry(logger?: Logger): AdapterRegistry {
 	registry.register(new DeepSeekAdapter(), logger);
 	registry.register(new Gpt6ChatAdapter(), logger);
 	registry.register(new Gpt61ChatAdapter(), logger);
+	registry.register(new OpenAIReasoningAdapter(), logger);
 	registry.register(new DefaultModelAdapter(), logger);
 
 	return registry;

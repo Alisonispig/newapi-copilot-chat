@@ -61,6 +61,9 @@ The model list comes entirely from your site, so **there is no fixed list**; the
 
 GPT-6.1 Sol is available for text and image chat. Its function calling requires the Responses API, while this extension currently uses Chat Completions, so the model is shown without tool calling in the picker. Agent mode with tools requires a Responses API transport.
 
+
+Newer OpenAI reasoning models (GPT-5.4+, GPT-5.6, GPT-6 Astra and Codex variants) are adapted automatically: unsupported sampling fields are removed before Chat Completions requests. Image-generation model IDs are exposed without tool calling.
+
 ## Settings
 
 Settings live under `newapi-copilot-chat.*`; search for `New API` in the Settings UI.
