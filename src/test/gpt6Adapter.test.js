@@ -55,7 +55,7 @@ test('数据表里每条记录的形状都对', () => {
 	}
 });
 
-test('GPT-6.1 Sol 有窗口、视觉和正确的思考档位，但在当前传输层不声明工具能力', () => {
+test('GPT-6.1 Sol 有窗口、视觉、工具和正确的思考档位', () => {
 	const entry = dataset.models.find(item => item.id === 'gpt-6.1-sol');
 	assert.ok(entry);
 	assert.equal(entry.contextWindow, 1050000);
@@ -69,11 +69,11 @@ test('GPT-6.1 Sol 有窗口、视觉和正确的思考档位，但在当前传�
 	});
 	assert.equal(config.contextWindow, 1050000);
 	assert.equal(config.imageInput, true);
-	assert.equal(config.toolCalling, false);
+	assert.equal(config.toolCalling, true);
 	assert.equal(config.reasoningEfforts.includes('none'), false);
 });
 
-test('GPT-6.1 Sol 仅允许无工具的 Chat Completions 请求', () => {
+test('GPT-6.1 Sol 支持工具的 Chat Completions 请求', () => {
 	const adapter = new Gpt61ChatAdapter();
 	const context = { model: { id: 'gpt-6.1-sol' }, logger: createLogger() };
 	assert.equal(adapter.supports({ id: 'gpt-6.1-sol' }), true);
@@ -85,10 +85,11 @@ test('GPT-6.1 Sol 仅允许无工具的 Chat Completions 请求', () => {
 	assert.equal(request.reasoning_effort, 'low');
 	assert.equal('temperature' in request, false);
 	assert.equal('top_p' in request, false);
-	assert.throws(() => adapter.transformRequest({
+	const withTools = adapter.transformRequest({
 		model: 'gpt-6.1-sol', messages: [{ role: 'user', content: 'hello' }],
 		tools: [{ type: 'function', function: { name: 'read_file' } }],
-	}, context), /Responses API/);
+	}, context);
+	assert.equal(withTools.tools.length, 1);
 });
 
 test('OpenAI 新推理模型移除不兼容的采样参数', () => {
